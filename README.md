@@ -1,5 +1,7 @@
 # Synclet
 
+Link to slides, created with canva: https://canva.link/jlufgzsufzn098j
+
 ## Screenshots
 
 ![Screenshot 2026-09-26 123606](src/Screenshots/Screenshot%202026-09-26%20123606.png)
