@@ -1,0 +1,53 @@
+{
+  "name": "AuditLog",
+  "type": "object",
+  "properties": {
+    "action": {
+      "type": "string",
+      "description": "e.g. ALERT_TRIGGERED, INCIDENT_ACKNOWLEDGED, DATA_EXPORT"
+    },
+    "actor": {
+      "type": "string"
+    },
+    "detail": {
+      "type": "string"
+    },
+    "target": {
+      "type": "string",
+      "description": "Record id the action concerns, if any"
+    },
+    "target_label": {
+      "type": "string",
+      "description": "Human-readable label, e.g. INC-00124"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "critical"
+      ],
+      "default": "info"
+    }
+  },
+  "required": [
+    "action",
+    "actor"
+  ],
+  "rls": {
+    "read": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "update": {
+      "user_condition": {
+        "role": "admin"
+      }
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}

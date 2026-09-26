@@ -1,0 +1,158 @@
+{
+  "name": "Incident",
+  "type": "object",
+  "properties": {
+    "incident_code": {
+      "type": "string",
+      "description": "Human-readable incident ID, e.g. INC-00124"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "user_phone": {
+      "type": "string"
+    },
+    "device_id": {
+      "type": "string"
+    },
+    "trigger_type": {
+      "type": "string",
+      "enum": [
+        "VOICE",
+        "MANUAL"
+      ]
+    },
+    "voice_command": {
+      "type": "string"
+    },
+    "intent_confidence": {
+      "type": "number"
+    },
+    "heart_rate": {
+      "type": "number"
+    },
+    "heart_rate_mode": {
+      "type": "string"
+    },
+    "battery": {
+      "type": "number"
+    },
+    "device_connected": {
+      "type": "boolean"
+    },
+    "latitude": {
+      "type": "number"
+    },
+    "longitude": {
+      "type": "number"
+    },
+    "location_label": {
+      "type": "string"
+    },
+    "location_simulated": {
+      "type": "boolean"
+    },
+    "primary_contact": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ACTIVE",
+        "ACKNOWLEDGED",
+        "RESPONDING",
+        "RESOLVED",
+        "CANCELLED"
+      ],
+      "default": "ACTIVE"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "CRITICAL",
+        "HIGH"
+      ],
+      "default": "CRITICAL"
+    },
+    "escalated": {
+      "type": "boolean",
+      "default": false
+    },
+    "triggered_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "acknowledged_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "responding_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "resolved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "officer": {
+      "type": "string"
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "at": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          },
+          "actor": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "incident_code",
+    "device_id",
+    "trigger_type",
+    "status"
+  ],
+  "rls": {
+    "read": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "update": {
+      "$or": [
+        {
+          "created_by_id": "{{user.id}}"
+        },
+        {
+          "user_condition": {
+            "role": "admin"
+          }
+        }
+      ]
+    },
+    "delete": {
+      "user_condition": {
+        "role": "admin"
+      }
+    }
+  }
+}
