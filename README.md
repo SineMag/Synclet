@@ -1,6 +1,6 @@
 # Synclet
 
-Link to slides, created with canva: https://canva.link/jlufgzsufzn098j
+Link to slides: https://docs.google.com/presentation/d/1rk1mrCJ2Sak_tT_C0ifyscfDUCZrNnTF2aLzF8TkqPw/edit?usp=sharing
 
 ## Screenshots
 
