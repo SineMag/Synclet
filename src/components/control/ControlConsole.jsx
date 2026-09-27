@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import useCurrentUser from '@/hooks/useCurrentUser';
-import useConnection from '@/hooks/useConnection';
 import { isOpen } from '@/lib/synclet/incidentService';
 import { playAlarm } from '@/lib/synclet/alertSound';
 import TopBar from '@/components/control/TopBar';
@@ -17,7 +16,6 @@ const KEY = ['cr-incidents'];
 export default function ControlConsole() {
   const { data: officer } = useCurrentUser();
   const qc = useQueryClient();
-  const { connected } = useConnection();
   const { data: incidents = [] } = useQuery({ queryKey: KEY, queryFn: () => base44.entities.Incident.list('-created_date', 100) });
   const [selectedId, setSelectedId] = useState(null);
   const [alertCode, setAlertCode] = useState(null);
@@ -44,11 +42,11 @@ export default function ControlConsole() {
   }, [incidents, selectedId]);
 
   const selected = incidents.find((i) => i.id === selectedId) || null;
-  const officerName = `Officer ${(officer.full_name || 'Demo').split(' ')[0]}`;
+  const officerName = `Officer ${(officer?.full_name || "S'ne").split(' ')[0]}`;
 
   return (
     <div className="h-full flex flex-col">
-      <TopBar connected={connected} officerName={officerName} activeCount={incidents.filter((i) => isOpen(i.status)).length} />
+      <TopBar officerName={officerName} activeCount={incidents.filter((i) => isOpen(i.status)).length} />
       {alertCode && <AlertBanner code={alertCode} />}
       <div className="flex-1 lg:min-h-0 grid grid-cols-1 lg:grid-cols-[320px_minmax(0,1fr)_300px]">
         <IncidentQueue incidents={incidents} selectedId={selected?.id} onSelect={setSelectedId} />

@@ -24,6 +24,11 @@ export default function IncidentCard({ incident, selected, onSelect }) {
         <StatusBadge status={incident.status} />
       </div>
       <p className="mt-2 font-mono text-sm">{incident.incident_code} · {incident.device_id}</p>
+      {incident.user_check_in && (
+        <p className={`mt-1 text-[10px] font-mono font-semibold tracking-wider ${incident.user_check_in === 'NEEDS_HELP' ? 'text-critical' : 'text-safe'}`}>
+          USER {incident.user_check_in === 'NEEDS_HELP' ? 'NEEDS HELP' : 'CONFIRMED OKAY'}
+        </p>
+      )}
       <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-xs">
         <div><dt className="text-muted-foreground">User</dt><dd className="truncate">{incident.user_name}</dd></div>
         <div><dt className="text-muted-foreground">Trigger</dt><dd className="truncate">{TRIGGER_LABELS[incident.trigger_type]}</dd></div>

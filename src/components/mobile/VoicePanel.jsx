@@ -21,30 +21,32 @@ export default function VoicePanel() {
   const [result, setResult] = useState(null);
   const contactName = primaryContact?.name || 'your primary contact';
 
-  const act = async (r) => {
-    if (!device.connected || !device.voiceReady) return [false, 'Voice module unavailable — device disconnected.'];
+  const act = async (command) => {
     if (!getSettings(user).voice.wakeWordEnabled) return [false, 'Wake word is turned off in Settings.'];
-    if (!r.wakeWordDetected) return [false, 'Ignored — wake word "Synclet" not detected.'];
-    if (r.intent === 'EMERGENCY') {
-      const s = await trigger({ triggerType: 'VOICE', voiceCommand: r.rawText, confidence: r.confidence });
-      const base = s.queued ? 'Alert saved on phone — will send on reconnect' : 'Emergency alert sent to security control room';
-      return [true, r.contact ? `${base}. Simulated call to ${contactName} (no real call placed).` : base];
+    if (!command.wakeWordDetected) return [false, 'Ignored — wake word "Synclet" not detected.'];
+    if (command.intent === 'EMERGENCY') {
+      await trigger({ triggerType: 'VOICE', voiceCommand: command.rawText, confidence: command.confidence });
+      const message = 'Alert recorded in this browser. No emergency service was contacted.';
+      return [true, command.contact ? `${message} Contact ${contactName} separately if needed.` : message];
     }
-    if (r.intent === 'CONTACT') return [true, `Simulated call to ${contactName} — no real call placed.`];
-    if (r.intent === 'CANCEL') {
-      const open = incidents.find((i) => canTransition(i.status, 'CANCELLED'));
+    if (command.intent === 'CONTACT') return [false, `No call is placed by Synclet. Contact ${contactName} directly if needed.`];
+    if (command.intent === 'CANCEL') {
+      const open = incidents.find((incident) => canTransition(incident.status, 'CANCELLED'));
       if (!open) return [false, 'No active alert to cancel.'];
-      const c = await cancel(open);
-      return [c.ok, c.ok ? 'Alert cancelled.' : c.reason];
+      const cancelled = await cancel(open);
+      return [cancelled.ok, cancelled.ok ? 'Alert cancelled.' : cancelled.reason];
     }
-    if (r.intent === 'DEVICE_STATUS') return [true, `Battery ${device.battery}% · heart rate ${device.heartRate} BPM · connected`];
+    if (command.intent === 'DEVICE_STATUS') {
+      const readings = [device.battery != null && `Battery ${device.battery}%`, device.heartRate != null && `heart rate ${device.heartRate} BPM`].filter(Boolean);
+      return [device.connected, device.connected ? readings.join(' · ') || 'ESP32 online; no sensor values reported.' : 'ESP32 is offline.'];
+    }
     return [false, 'Command not recognised. Try "Synclet, I am in danger."'];
   };
 
   const handle = async (text) => {
-    const r = interpret(text);
-    const [ok, action] = await act(r);
-    setResult({ ...r, ok, action });
+    const command = interpret(text);
+    const [ok, action] = await act(command);
+    setResult({ ...command, ok, action });
   };
   const listening = useLiveListening(handle);
 
@@ -55,9 +57,9 @@ export default function VoicePanel() {
         <div className="border border-dashed border-warn/50 rounded-md p-3 space-y-2">
           <div className="flex items-center justify-between gap-2">
             <p className="text-sm font-medium">Wearable microphone</p>
-            <SimBadge label="Simulated input" />
+            <SimBadge label="Not connected" />
           </div>
-          <p className="text-xs text-muted-foreground">Stands in for the wearable's always-on microphone and wake-word engine. Choose or type what the user says.</p>
+          <p className="text-xs text-muted-foreground">The wearable microphone and wake-word engine are not connected. Use the phone browser microphone while this page is open.</p>
           <VoiceSimulatorInput onSubmit={handle} disabled={sending} />
         </div>
         <VoiceResult result={result} />

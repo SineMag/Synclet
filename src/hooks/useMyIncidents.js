@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
-// The signed-in user's own incidents. `live: true` subscribes to real-time updates (use once, in the layout).
+// The demo user's incidents. `live: true` listens for localStorage-backed updates (use once, in the layout).
 export default function useMyIncidents(user, { live = false } = {}) {
   const qc = useQueryClient();
   const key = ['my-incidents', user?.id];

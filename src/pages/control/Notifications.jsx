@@ -11,6 +11,9 @@ const DOT = {
   [EVENTS.RESOLVED]: 'bg-safe',
   [EVENTS.ESCALATED]: 'bg-critical',
   [EVENTS.CONTACT]: 'bg-info',
+  [EVENTS.USER_CHECK_IN_SAFE]: 'bg-safe',
+  [EVENTS.USER_CHECK_IN_HELP]: 'bg-critical',
+  [EVENTS.HARDWARE_CANCEL_UNCONFIRMED]: 'bg-warn',
   [EVENTS.SYNCED]: 'bg-warn',
 };
 

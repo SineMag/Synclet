@@ -12,7 +12,7 @@ function Stat({ label, children, tone = '' }) {
   );
 }
 
-export default function TopBar({ connected, officerName, activeCount }) {
+export default function TopBar({ officerName, activeCount }) {
   const [now, setNow] = useState(new Date());
   const [audio, setAudio] = useState(false);
   useEffect(() => { const t = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(t); }, []);
@@ -27,7 +27,7 @@ export default function TopBar({ connected, officerName, activeCount }) {
         <span className="hidden xl:inline text-[11px] tracking-[0.2em] text-muted-foreground">Security Control Room</span>
       </Link>
       <div className="ml-auto flex items-center gap-6">
-        <Stat label="Connection" tone={connected ? 'text-safe' : 'text-warn'}>{connected ? '● Online' : '○ Offline · reconnecting'}</Stat>
+        <Stat label="Storage" tone="text-safe">LOCAL · THIS BROWSER</Stat>
         <Stat label="Officer">{officerName} · <span className="text-safe">On duty</span></Stat>
         <Stat label="Active incidents" tone={activeCount ? 'text-critical' : ''}>{activeCount}</Stat>
         <button onClick={enableAudio} className={`flex items-center gap-1.5 text-[11px] border px-2 py-1 rounded-sm ${audio ? 'border-safe/50 text-safe' : 'border-warn/50 text-warn'}`}>

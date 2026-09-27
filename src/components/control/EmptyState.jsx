@@ -8,7 +8,7 @@ export default function EmptyState() {
         <ShieldCheck className="w-7 h-7 text-safe" />
       </div>
       <h2 className="mt-4 font-mono tracking-[0.2em] text-sm">NO ACTIVE INCIDENTS</h2>
-      <p className="mt-1 text-sm text-muted-foreground">Monitoring connected Synclet devices. New alerts appear here instantly.</p>
+      <p className="mt-1 text-sm text-muted-foreground">New incidents saved from Synclet in this browser appear here.</p>
     </section>
   );
 }

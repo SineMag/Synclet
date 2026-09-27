@@ -17,7 +17,7 @@ export default function LiveListeningToggle({ listening }) {
         <SimBadge real label="Real · browser speech" />
         {active && <span className="text-[11px] text-safe font-mono">● LISTENING FOR "SYNCLET"</span>}
       </div>
-      {!supported && <p className="mt-2 text-xs text-muted-foreground">Not supported in this browser — use Chrome, or the simulated input below.</p>}
+      {!supported && <p className="mt-2 text-xs text-muted-foreground">Not supported in this browser — use desktop Chrome or Edge, or enter text below.</p>}
       {active && heard && <p className="mt-2 text-xs text-muted-foreground">Hearing: "{heard}"</p>}
       {error && <p className="mt-2 text-xs text-critical">{error}</p>}
     </div>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { AlertTriangle, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import { AlertTriangle, ShieldCheck } from 'lucide-react';
 import { isOpen } from '@/lib/synclet/incidentService';
 
 export default function EmergencyHeader({ incident }) {
@@ -13,11 +13,9 @@ export default function EmergencyHeader({ incident }) {
           {open ? 'EMERGENCY ACTIVE' : resolved ? 'INCIDENT RESOLVED' : 'ALERT CANCELLED'}
         </h1>
       </div>
-      {open && (
-        <p className="mt-3 flex items-center gap-2 text-sm font-medium">
-          <CheckCircle2 className="w-4 h-4" /> Security Control Room Notified
-        </p>
-      )}
+      {open && <p className="mt-3 text-sm font-medium">This alert is recorded locally; no emergency service was contacted.</p>}
+      {incident.user_check_in === 'NEEDS_HELP' && <p className="mt-2 text-sm font-semibold">User requested help · this browser’s control room is updated</p>}
+      {incident.user_check_in === 'SAFE' && <p className="mt-2 text-sm font-semibold">User confirmed they are okay</p>}
       <p className={`mt-1 font-mono text-xs ${open ? 'opacity-90' : 'text-muted-foreground'}`}>Incident ID: {incident.incident_code}</p>
     </div>
   );

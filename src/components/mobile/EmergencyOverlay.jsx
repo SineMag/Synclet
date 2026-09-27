@@ -35,6 +35,16 @@ export default function EmergencyOverlay({ user }) {
       <div className="flex-1 overflow-y-auto p-5 space-y-6">
         {latest.status !== 'CANCELLED' && <StatusStepper status={latest.status} />}
         <p className="text-lg font-medium leading-snug">{MOBILE_MESSAGES[latest.status]}</p>
+        {latest.user_check_in === 'NEEDS_HELP' && (
+          <p className="rounded-md border border-critical/30 bg-critical/5 p-3 text-sm font-medium text-critical">
+            You asked for help. This is recorded in this browser’s control room; emergency-contact SMS drafts are not sent automatically.
+          </p>
+        )}
+        {latest.user_check_in === 'SAFE' && (
+          <p className="rounded-md border border-safe/30 bg-safe/5 p-3 text-sm font-medium text-safe">
+            You confirmed that you are okay. The control room has been updated.
+          </p>
+        )}
         <div>
           <Row label="Trigger" value={TRIGGER_LABELS[latest.trigger_type]} />
           <Row label="Heart rate" value={latest.heart_rate != null ? `${latest.heart_rate} BPM` : 'Not shared'} />

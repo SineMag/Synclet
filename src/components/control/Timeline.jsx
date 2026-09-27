@@ -8,6 +8,9 @@ const DOT = {
   [EVENTS.RESPONDING]: 'bg-info',
   [EVENTS.RESOLVED]: 'bg-safe',
   [EVENTS.ESCALATED]: 'bg-critical',
+  [EVENTS.USER_CHECK_IN_SAFE]: 'bg-safe',
+  [EVENTS.USER_CHECK_IN_HELP]: 'bg-critical',
+  [EVENTS.HARDWARE_CANCEL_UNCONFIRMED]: 'bg-warn',
 };
 
 export default function Timeline({ entries = [] }) {

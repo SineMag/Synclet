@@ -1,23 +1,23 @@
 import React from 'react';
 
 const ITEMS = [
-  ['Bluetooth (BLE)', 'The app talks only to a device-link adapter (scan, connect, disconnect, status, heart-rate subscription, commands). A real adapter using Web Bluetooth or a native BLE module will replace the simulator and connect to the ESP32 GATT services below, with no UI changes.'],
-  ['Heart rate', 'MAX30102 over I²C on the ESP32 → standard Heart Rate Service (0x180D) notifications. Readings are combined with motion and voice rather than treated as proof of danger.'],
-  ['Fingerprint', 'An R503/AS608 sensor over UART. Matching runs on the sensor, and only "match / no match + template ID" is sent over BLE. The biometric service calls (authenticate, register, availability) stay the same.'],
-  ['Wake word & voice', 'An on-device wake-word engine (e.g. an ESP-SR / microWakeWord model trained on "Synclet") wakes the mic, then speech-to-text on the phone and the existing intent classifier run. An optional language-model layer can map free phrasing to the same intents later.'],
-  ['Emergency button & battery', 'A GPIO interrupt with debounce sends an EMERGENCY command characteristic, and battery level uses the Battery Service (0x180F).'],
-  ['Location', 'The phone supplies GPS (already supported when "Use phone location" is on); the wearable does not need its own GPS.'],
+  ['ESP32 firmware', 'Flash firmware/SyncletMqtt/SyncletMqtt.ino over USB. Configure Wi-Fi in a local secrets.h file and verify the board’s GPIO pinout before wiring.'],
+  ['MQTT connection', 'Both ESP32 and Synclet connect to the supplied broker and matching topics. The public broker is shared; do not publish personal or safety-case details to it.'],
+  ['SOS button', 'The starter firmware starts a 15-second on-device countdown on GPIO 4. Press again to cancel. After expiry, the mobile app records a local incident and asks whether the user is okay; a help response escalates it and offers reviewable SMS drafts for saved contacts.'],
+  ['Control room sharing', 'The browser control-room and mobile screens share same-origin localStorage. Cross-device sharing requires a private hosted backend.'],
+  ['Sensors', 'Only values actually published by firmware are displayed. Heart rate, battery, fingerprint, microphone and motion sensors are not implemented in the starter firmware.'],
+  ['Location', 'Phone GPS is included only when enabled and permitted; a fallback location is clearly labelled and should not be treated as a live position.'],
 ];
 
 export default function HardwareRoadmap() {
   return (
     <section>
-      <h2 className="text-[11px] font-mono uppercase tracking-[0.14em] text-muted-foreground">Hardware integration plan</h2>
+      <h2 className="text-[11px] font-mono uppercase tracking-[0.14em] text-muted-foreground">Hardware integration</h2>
       <div className="mt-3 grid md:grid-cols-2 gap-3">
-        {ITEMS.map(([t, d]) => (
-          <div key={t} className="border border-border rounded-md p-4 bg-card">
-            <p className="font-semibold text-sm">{t}</p>
-            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{d}</p>
+        {ITEMS.map(([title, description]) => (
+          <div key={title} className="border border-border rounded-md p-4 bg-card">
+            <p className="font-semibold text-sm">{title}</p>
+            <p className="text-sm text-muted-foreground mt-1 leading-relaxed">{description}</p>
           </div>
         ))}
       </div>

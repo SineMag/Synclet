@@ -31,7 +31,8 @@ const write = (k, v) => {
 export const getPendingQueue = () => read(QUEUE_KEY);
 
 export function buildIncident({ user, device, location, triggerType, voiceCommand, confidence, primaryContact, privacy }) {
-  const name = user.display_name || user.full_name || 'Demo User';
+  const name = user.display_name || user.full_name || "S'ne";
+  const hasHardwareTelemetry = device.connected && device.source === 'hardware';
   const message = triggerType === 'VOICE' ? `Emergency received — voice command "${voiceCommand}"` : 'Emergency received — manual safety alert';
   return {
     incident_code: generateIncidentCode(),
@@ -41,10 +42,11 @@ export function buildIncident({ user, device, location, triggerType, voiceComman
     trigger_type: triggerType,
     voice_command: voiceCommand || '',
     intent_confidence: confidence,
-    heart_rate: privacy.shareHeartRate ? device.heartRate : undefined,
-    heart_rate_mode: device.hrMode,
-    battery: device.battery,
-    device_connected: device.connected,
+    heart_rate: privacy.shareHeartRate && hasHardwareTelemetry ? device.heartRate : undefined,
+    heart_rate_mode: hasHardwareTelemetry ? device.hrMode : undefined,
+    heart_rate_source: hasHardwareTelemetry && device.heartRate != null ? 'hardware' : undefined,
+    battery: hasHardwareTelemetry ? device.battery : undefined,
+    device_connected: hasHardwareTelemetry,
     latitude: privacy.shareLocation ? location.lat : undefined,
     longitude: privacy.shareLocation ? location.lng : undefined,
     location_label: privacy.shareLocation ? location.label : 'Withheld by user privacy setting',
@@ -107,6 +109,33 @@ export async function transitionIncident(incident, to, actor) {
   if (to === 'ACKNOWLEDGED') patch.officer = actor;
   await base44.entities.Incident.update(incident.id, patch);
   audit(`INCIDENT_${to}`, actor, MESSAGES[to](actor), incident.id, incident.incident_code);
+}
+
+export async function recordUserCheckIn(incident, response, actor, contacts = []) {
+  if (!incident?.id) throw new Error('The safety incident could not be found.');
+  if (!['SAFE', 'NEEDS_HELP'].includes(response)) throw new Error('Choose whether you are okay or need help.');
+  if (incident.user_check_in) return { alreadyRecorded: true };
+
+  const safe = response === 'SAFE';
+  const shouldCloseAlert = safe && canTransition(incident.status, 'CANCELLED');
+  const at = new Date().toISOString();
+  const contactAlerts = safe ? [] : contacts
+    .filter((contact) => contact?.phone)
+    .map(({ id, name, phone }) => ({ id, name, phone, status: 'SMS_DRAFT_READY' }));
+  const message = safe
+    ? `${actor} confirmed they are okay.${shouldCloseAlert ? ' The active alert was closed.' : ' The incident remains open for control-room follow-up.'}`
+    : `${actor} reported needing help. Incident escalated; ${contactAlerts.length} emergency contact SMS draft${contactAlerts.length === 1 ? '' : 's'} prepared. No messages sent.`;
+  const patch = {
+    user_check_in: response,
+    user_check_in_at: at,
+    timeline: [...(incident.timeline || []), timelineEntry(safe ? EVENTS.USER_CHECK_IN_SAFE : EVENTS.USER_CHECK_IN_HELP, message, actor)],
+    ...(shouldCloseAlert ? { status: 'CANCELLED', resolved_at: at } : {}),
+    ...(!safe ? { escalated: true, priority: 'CRITICAL', contact_alerts: contactAlerts } : {}),
+  };
+
+  const updatedIncident = await base44.entities.Incident.update(incident.id, patch);
+  audit(safe ? EVENTS.USER_CHECK_IN_SAFE : EVENTS.USER_CHECK_IN_HELP, actor, message, incident.id, incident.incident_code, safe ? 'info' : 'critical');
+  return { alreadyRecorded: false, contactAlerts, incident: updatedIncident };
 }
 
 export const logIncidentAction = async (incident, type, message, actor, extra = {}) => {
